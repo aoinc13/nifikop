@@ -4,7 +4,7 @@ title: Securing NiFi with SSL
 sidebar_label: SSL
 ---
 
-The `NiFi operator` makes securing your NiFi cluster with SSL. You may provide your own certificates, or instruct the operator to create them for from your cluster configuration.
+The `NiFi operator` makes securing your NiFi cluster with SSL easy. You may provide your own certificates (needs example), or instruct the operator to create them for from your cluster configuration.
 
 Below this is an example configuration required to secure your cluster with SSL :
 
@@ -41,7 +41,7 @@ spec:
       create: true
 ```
 
-- `managedAdminUsers` : list of users account which will be configured as admin into NiFi cluster, please check [](../4_nifi_user_group#managed-groups-for-simple-setup) for more information.
+- `managedAdminUsers` : list of users account which will be configured as admin in NiFi cluster, please check [](../4_nifi_user_group#managed-groups-for-simple-setup) for more information.
 - `readOnlyConfig.nifiProperties.webProxyHosts` : A list of allowed HTTP Host header values to consider when NiFi is running securely and will be receiving requests to a different host[:port] than it is bound to. [web-properties](https://nifi.apache.org/docs/nifi-docs/html/administration-guide.html#web-properties)
 
 If `listenersConfig.sslSecrets.create` is set to `false`, the operator will look for the secret at `listenersConfig.sslSecrets.tlsSecretName` and expect these values :
@@ -55,13 +55,13 @@ If `listenersConfig.sslSecrets.create` is set to `false`, the operator will look
 
 ## Using an existing Issuer
 
-As described in the [Reference section](../../5_references/1_nifi_cluster/6_listeners_config.md#sslsecrets), instead of using a self-signed certificate as CA, you can use an existing one.
+As described in the [Reference section](../../5_references/1_nifi_cluster/6_listeners_config.md#sslsecrets), instead of using a self-signed certificate as CA, you can use an existing issuer.
 In order to do so, you only have to refer it into your `Spec.ListenerConfig.SslSecrets.IssuerRef` field.
 
 ### Example : Let's encrypt
 
 Let's say you have an existing DNS server, with [external dns](https://github.com/kubernetes-sigs/external-dns) deployed into your cluster's namespace.
-You can easily use Let's encrypt as authority for your certificate.
+You can easily use [Let's Encrypt](https://letsencrypt.org/) as an authority for your certificate.
 
 To do this, you have to :
 
@@ -117,9 +117,9 @@ spec:
 
 ## Create SSL credentials
 
-You may use `NifiUser` resource to create new certificates for your applications, allowing them to query your Nifi cluster.
+You may use `NifiUser` resource to create new user certificates for your application, allowing users to authenticate and query your Nifi cluster.
 
-To create a new client you will need to generate new certificates sign by the CA. The operator can automate this for you using the `NifiUser` CRD :
+To create a new user you will need to generate new certificates signed by the CA. The operator can automate this for you using the `NifiUser` CRD :
 
 ```console
 cat << EOF | kubectl apply -n nifi -f -
@@ -156,4 +156,4 @@ The operator can also include a Java keystore format (JKS) with your user secret
 | key      | value                                                                                                  |
 | -------- | ------------------------------------------------------------------------------------------------------ |
 | tls.jks  | The java keystore containing both the user keys and the CA (use this for your keystore AND truststore) |
-| pass.txt | The password to decrypt the JKS (this will be randomly generated)                                      |
+| pass.txt | The password to decrypt the JKS file (this will be randomly generated)                                 |
